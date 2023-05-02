@@ -1,5 +1,3 @@
-![license]
-
 # BigData-Image-Recomender
 
 Hochschule Düsseldorf : Big Data Engineering
