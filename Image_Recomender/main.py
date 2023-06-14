@@ -1,16 +1,22 @@
+from colour.py import calculate_histogram
+from database.py import connect_test_database
 
 # generator um alle Bilder mit ihren Eigenschaften in die database zu laden
-def generator1():
+def test_generator():
     pass
 
 
 def id_generator():
-    pass
+    current_id = 1
+    while True:
+        yield current_id
+        current_id += 1
+
 
 # das input Bild muss bearbeitet werden
-def input_bild():
-    pass
-
+def input_picture_hist(image):
+    hist = colour.calculate_histogram(image)
+    return hist
 
 # gitb die top five der jeweiligen kategorie aus
 def topfive(kategorie):
@@ -30,4 +36,3 @@ def zeige_bilder():
 # soll alles verbinden
 def main():
     pass
-
