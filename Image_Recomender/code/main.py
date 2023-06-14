@@ -1,10 +1,15 @@
-from colour.py import calculate_histogram
-from database.py import connect_test_database
+import cv2
+import numpy as np
+import os
+import sys
+from colour import calculate_histogram
+from database import connect_test_database
+
 
 # generator um alle Bilder mit ihren Eigenschaften in die database zu laden
 def test_generator():
-    pass
-
+    path = os.path.join(os.getcwd(), "test")
+    print(path)
 
 def id_generator():
     current_id = 1
@@ -36,3 +41,5 @@ def zeige_bilder():
 # soll alles verbinden
 def main():
     pass
+
+test_generator()
