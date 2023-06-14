@@ -18,14 +18,14 @@ def create_table(conn):
 # Methode zum Einfügen eines Datensatzes
 def add_test_picture(conn, id, histogram):
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO test_pictures (id, histogram) VALUES (?, ?)", (id, histogram))
+    cursor.execute("INSERT OR REPLACE INTO test_pictures (id, histogram) VALUES (?, ?)", (id, histogram))
     conn.commit()
 
 
 # Methode zum Abrufen und Ausgeben aller Datensätze
 def show_test_pictures(conn):
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM test_pictures")
+    cursor.execute("SELECT histogram FROM test_pictures")
     rows = cursor.fetchall()
     for row in rows:
         print(row)
@@ -37,6 +37,5 @@ def close_test_pictures_connection(conn):
 
 
 # einmalige Ausführung zum erstellen
-
 conn = connect_test_database()
-create_table(conn)
+show_test_pictures(conn)
