@@ -11,7 +11,7 @@ def connect_test_database():
 def create_table(conn):
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS test_pictures
-                      (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      (id INTEGER PRIMARY KEY,
                        histogramm TEXT)''')
 
 
