@@ -12,13 +12,13 @@ def create_table(conn):
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS test_pictures
                       (id INTEGER PRIMARY KEY,
-                       histogramm TEXT)''')
+                       histogram TEXT)''')
 
 
 # Methode zum Einfügen eines Datensatzes
-def add_test_picture(conn, id, histogramm):
+def add_test_picture(conn, id, histogram):
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO test_pictures (id, histogramm) VALUES (?, ?)", (id, histogramm))
+    cursor.execute("INSERT INTO test_pictures (id, histogram) VALUES (?, ?)", (id, histogram))
     conn.commit()
 
 
