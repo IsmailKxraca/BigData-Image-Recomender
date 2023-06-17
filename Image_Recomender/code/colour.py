@@ -2,9 +2,9 @@ import numpy as np
 import cv2
 
 
-# berechnet den Farbhistogramm mit angegebener Bin-anzahl (momentan 64,64,64) für das eingegebene Image
+# berechnet den Farbhistogramm mit angegebener Bin-anzahl (momentan 8,8,8) für das eingegebene Image
 def calculate_histogram(image):
-    hist = cv2.calcHist([image], [0, 1, 2], None, [64, 64, 64], [0, 256, 0, 256, 0, 256])
+    hist = cv2.calcHist([image], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
     cv2.normalize(hist, hist)
     return hist
 

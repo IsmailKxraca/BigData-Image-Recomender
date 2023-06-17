@@ -3,9 +3,7 @@ import numpy as np
 import os
 import sys
 from colour import calculate_histogram
-from database import connect_test_database
-from database import add_test_picture
-from database import close_test_pictures_connection
+import database
 
 ordner_path = r"C:\Users\Ismai\OneDrive\Desktop\Big Data Dateien\train2017"
 conn = connect_test_database()
