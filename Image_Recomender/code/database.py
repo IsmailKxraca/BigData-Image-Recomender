@@ -30,7 +30,7 @@ def add_test_picture(conn, id, histogram):
 
 def add_path(conn, id, path):
     cursor = conn.cursor()
-    cursor.execute("INSERT OR REPLACE INTO test_pictures (id, path) VALUES (?, ?)", (id, path))
+    cursor.execute("INSERT OR REPLACE INTO picture_paths (id, path) VALUES (?, ?)", (id, path))
     conn.commit()
 
 # Methode zum Abrufen und Ausgeben aller Datensätze
@@ -43,7 +43,7 @@ def show_test_pictures(conn):
 
 def show_path(conn):
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM pictures_path")
+    cursor.execute("SELECT * FROM picture_paths")
     rows = cursor.fetchall()
     for row in rows:
         print(row)

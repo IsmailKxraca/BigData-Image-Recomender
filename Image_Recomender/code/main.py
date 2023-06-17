@@ -6,31 +6,23 @@ from colour import calculate_histogram
 import database
 
 ordner_path = r"C:\Users\Ismai\OneDrive\Desktop\Big Data Dateien\train2017"
-conn = connect_test_database()
+conn = database.connect_test_database()
 
 # generator um alle Bilder mit ihren Eigenschaften in die database zu laden
-def test_generator():
+def test_generator(img_gen, id_gen):
 
     #cur_img ist der Pfad zum aktuellen Bild, welcher im Generator dran ist.
     cur_img = next(img_gen)
     cur_transformed_img = cv2.imread(cur_img)
     hist = calculate_histogram(cur_transformed_img)
+    print(hist)
 
     cur_id = next(id_gen)
-    add_test_picture(conn, cur_id, hist)
+    database.add_test_picture(conn, cur_id, str(hist))
+    database.add_path(conn, cur_id, cur_img)
 
-    # Dieser ganze Codeblock sorgt dafür, dass der Name des Bildes zur ID wird, wie die in der Datenbank.
-    file_extension = os.path.splitext(os.path.basename(cur_img))[1]  # Dateierweiterung extrahieren
-    new_filename = f"{cur_id}{file_extension}"
+    print(f"{cur_id} successfully gespeichert")
 
-    old_path = os.path.join(ordner_path, os.path.basename(cur_img))
-    new_path = os.path.join(ordner_path, new_filename)
-
-    os.rename(old_path, new_path)
-
-    print(f"Umbenannt: {old_path} -> {new_path}")
-
-    yield cur_id
 
 def id_generator():
     current_id = 1
@@ -65,14 +57,20 @@ def zeige_bilder():
 
 # soll alles verbinden
 def main():
-    pass
 
-img_gen = image_generator(ordner_path)
-id_gen = id_generator()
+    database.reset_database(conn)
 
-test = test_generator()
+    database.create_table(conn)
+    database.create_path_table(conn)
 
-for i in range(100):
-    next(test)
+    img_gen = image_generator(ordner_path)
+    id_gen = id_generator()
 
-close_test_pictures_connection(conn)
+    for i in range(100):
+        test_generator(img_gen,id_gen)
+
+main()
+
+database.show_test_pictures(conn)
+
+database.close_test_pictures_connection(conn)
