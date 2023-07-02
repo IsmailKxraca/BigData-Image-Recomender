@@ -9,4 +9,4 @@ Description: An Algorithm that takes an Image as Input and gives you the 5 most 
 There are three Similarity Measure Options:
 1. Colour-Scheme
 2. SSIM
-3. 
+3. Embeddings: ResNet
