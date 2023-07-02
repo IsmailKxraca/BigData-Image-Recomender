@@ -8,6 +8,9 @@ import database
 import pandas as pd
 import csv
 import pickle
+import heapq
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
 ordner_path = r"C:\Users\Ismai\OneDrive\Desktop\Big Data Dateien\train2017"
 conn = database.connect_test_database()
@@ -56,8 +59,10 @@ def image_generator(path):
 
 
 # gitb die top five der jeweiligen kategorie aus
-def topfive(kategorie):
-    pass
+def topfive(dict):
+    largest_values = heapq.nlargest(5, dict, key=dict.get)
+
+    return largest_values
 
 
 # generator um das input-Bild mit allen Bildern in der Datenbank zu vergleichen
@@ -77,12 +82,34 @@ def generator_vergleich(input_img):
 
 
 # soll die topfive bilder darstellen, finaler output
-def zeige_bilder():
-    pass
+def zeige_bilder(conn, top_five_list, dict):
+    path_liste = []
+    for id in top_five_list:
+        path_liste.append(database.get_path_from_id(conn, id))
+
+    fig, axes = plt.subplots(nrows=1, ncols=5, figsize=(12, 4))
+
+    # Bilder laden und anzeigen
+    for i in range(5):
+        image_path = path_liste[i]
+        image = mpimg.imread(image_path)
+        axes[i].imshow(image)
+        axes[i].axis('off')
+
+        fig.text(0.5, 0.95, 'Farbschema', fontsize=12, color='white', backgroundcolor="black", weight="bold",
+                  ha='center', va='center')
+        text = f"{round(dict[top_five_list[i]],3)*100}% Ähnlichkeit"
+        axes[i].text(0, 0, text, color='white', backgroundcolor='black', fontsize=10, weight='bold')
+
+    # Bilder anzeigen
+    plt.tight_layout()
+    plt.show()
+
+
 
 
 # soll alles verbinden
-def main():
+def data_ready():
 
     database.reset_database(conn)
 
@@ -97,11 +124,27 @@ def main():
     data_to_pickle()
 
 
-main()
-database.show_path(conn)
+def main(input_image):
 
-dict = generator_vergleich(r"C:\Users\Ismai\OneDrive\Desktop\train2017\000000008876.jpg")
-print(dict)
+    dict = generator_vergleich(input_image)
+
+    top_five = topfive(dict)
+
+    image = mpimg.imread(input_image)
+
+    # Figur erstellen
+    fig2 = plt.figure()
+
+    plt.imshow(image)
+    fig2.text(0.5, 0.95, 'Input Image', fontsize=12, color='red', backgroundcolor="black",weight="bold", ha='center', va='center')
+    plt.axis('off')
+
+    plt.show(block=False)
+
+    zeige_bilder(conn, top_five, dict)
+
+main(r"C:\Users\Ismai\OneDrive\Bilder\Eigene Aufnahmen\WIN_20230504_10_57_39_Pro.jpg")
+
 
 database.close_test_pictures_connection(conn)
 

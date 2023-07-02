@@ -41,6 +41,18 @@ def show_test_pictures(conn):
     for row in rows:
         print(row)
 
+
+def get_path_from_id(conn, id_to_find):
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT Path FROM picture_paths WHERE ID = ?", (id_to_find,))
+    result = cursor.fetchone()
+
+    if result:
+        path = result[0]
+        return path
+    else:
+        return None
+
 def show_path(conn):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM picture_paths")
@@ -59,15 +71,4 @@ def reset_database(conn):
 def close_test_pictures_connection(conn):
     conn.close()
 
-
-
-
-conn = connect_test_database()
-
-create_table(conn)
-create_path_table(conn)
-
-show_test_pictures(conn)
-
-close_test_pictures_connection(conn)
 
