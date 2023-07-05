@@ -98,7 +98,7 @@ def zeige_bilder(conn, top_five_list, dict):
 
         fig.text(0.5, 0.95, 'Farbschema', fontsize=12, color='white', backgroundcolor="black", weight="bold",
                   ha='center', va='center')
-        text = f"{round(dict[top_five_list[i]],3)*100}% Ähnlichkeit"
+        text = f"{round(dict[top_five_list[i]],2)*100}% Ähnlichkeit"
         axes[i].text(0, 0, text, color='white', backgroundcolor='black', fontsize=10, weight='bold')
 
     # Bilder anzeigen
@@ -118,7 +118,7 @@ def data_ready():
     img_gen = image_generator(ordner_path)
     id_gen = id_generator()
 
-    for i in range(1000):
+    for i in range(31000):
         data(img_gen, id_gen)
 
     data_to_pickle()
@@ -143,7 +143,7 @@ def main(input_image):
 
     zeige_bilder(conn, top_five, dict)
 
-main(r"C:\Users\Ismai\OneDrive\Bilder\Eigene Aufnahmen\WIN_20230504_10_57_39_Pro.jpg")
+main(r"C:\Users\Ismai\Downloads\tempxwiesebluehengjpg100~_v-gseagaleriexl.jpg")
 
 
 database.close_test_pictures_connection(conn)
