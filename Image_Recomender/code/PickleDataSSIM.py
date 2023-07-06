@@ -16,12 +16,12 @@ def calculate_similarity(target_image_path, pickle_file_path):
     best_ssim = 1
 
     # Bilddaten laden aus der pickle datei
-    with open(pickle_file_path, 'rb') as f:
+    with open(ordner_path, 'rb') as f:
         image_data = pickle.load(f)
 
     # Bilder werden durchlaufen
     for image_info in image_data:
-        bild = cv2.imread(image_info['ImagePath'], cv2.IMREAD_GRAYSCALE)
+        bild = cv2.imread(image_info['ordner_path'], cv2.IMREAD_GRAYSCALE)
         bild = transform.resize(bild, (128, 128), mode='reflect')
 
         # SSIM berechnen
