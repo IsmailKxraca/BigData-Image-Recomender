@@ -14,7 +14,3 @@ def bhattacharyya_distance(hist1, hist2):
     bcoeff = cv2.compareHist(hist1, hist2, cv2.HISTCMP_BHATTACHARYYA)
     bdist = np.sqrt(1 - bcoeff)
     return bdist
-
-
-hist = calculate_histogram(cv2.imread(r"C:\Users\Ismai\OneDrive\Desktop\train2017\000000001393.jpg"))
-print(type(hist))
