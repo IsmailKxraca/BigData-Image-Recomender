@@ -18,6 +18,7 @@ conn = database.connect_test_database()
 
 # the list where we save the ID + Histograms temporarily
 hist_data = []
+ssim_data = []
 
 
 # function to fill path database and histogram with id into list hist_data
