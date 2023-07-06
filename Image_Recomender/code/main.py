@@ -12,9 +12,11 @@ import heapq
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
+# our path with the image data
 ordner_path = r"C:\Users\Ismai\OneDrive\Desktop\Big Data Dateien\train2017"
 conn = database.connect_test_database()
 
+# the list where we save the ID + Histograms temporarily
 hist_data = []
 
 
@@ -30,18 +32,19 @@ def data(img_gen, id_gen):
     database.add_path(conn, cur_id, cur_img)
 
 
-# transform the csv file into pickle file
+# loads the hist_data list into a Dataframe and than turns it into a pickle file
 def data_to_pickle():
     df = pd.DataFrame(hist_data, columns=['Id', 'Histogram'])
     df.to_pickle("histograms.pkl")
 
 
-# load the pickel file as df_restored
+# load the histograms pickle file as df_restored
 def read_pickle():
     df_restored = pd.read_pickle("histograms.pkl")
     return df_restored
 
 
+# counter as generator for giving the IDs
 def id_generator():
     current_id = 1
     while True:
@@ -49,28 +52,29 @@ def id_generator():
         current_id += 1
 
 
+# generator giving out one picture-path per skip in the given Ordner
 def image_generator(path):
-    image_extensions = ['.jpg', '.jpeg', '.png', '.gif']  # Liste der unterstützten Bildformate
+    image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
 
     for filename in os.listdir(path):
-        file_extension = os.path.splitext(filename)[1].lower()  # Dateierweiterung in Kleinbuchstaben extrahieren
+        file_extension = os.path.splitext(filename)[1].lower()
         if file_extension in image_extensions:
             yield os.path.join(path, filename)
 
 
-# gitb die top five der jeweiligen kategorie aus
+# input = dictionary with all similarities. Output = list with Ids of the top five highest values.
 def topfive(dict):
     largest_values = heapq.nlargest(5, dict, key=dict.get)
 
     return largest_values
 
 
-# generator um das input-Bild mit allen Bildern in der Datenbank zu vergleichen
+# generator for comparing the Input-Image with all of the histograms saved in the pickle file.
+# Output = dictionary with all similarities
 def generator_vergleich(input_img):
     new_img = cv2.imread(input_img)
     new_hist = calculate_histogram(new_img)
 
-    # ÄNDERN, sortieren o.ä
     compare_dict = {}
     df = read_pickle()
     for index, row in df.iterrows():
@@ -81,15 +85,16 @@ def generator_vergleich(input_img):
     return compare_dict
 
 
-# soll die topfive bilder darstellen, finaler output
+# plots the top five most similar images
 def zeige_bilder(conn, top_five_list, dict):
+    # gets the full image paths of the top five IDs
     path_liste = []
     for id in top_five_list:
         path_liste.append(database.get_path_from_id(conn, id))
 
     fig, axes = plt.subplots(nrows=1, ncols=5, figsize=(12, 4))
 
-    # Bilder laden und anzeigen
+    # plots all five images with the similarity as text next to each other.
     for i in range(5):
         image_path = path_liste[i]
         image = mpimg.imread(image_path)
@@ -101,16 +106,13 @@ def zeige_bilder(conn, top_five_list, dict):
         text = f"{round(dict[top_five_list[i]],2)*100}% Ähnlichkeit"
         axes[i].text(0, 0, text, color='white', backgroundcolor='black', fontsize=10, weight='bold')
 
-    # Bilder anzeigen
+    # final plot
     plt.tight_layout()
     plt.show()
 
 
-
-
-# soll alles verbinden
+# makes database + histogram pickle file ready. with the 31000 images of the Ordner
 def data_ready():
-
     database.reset_database(conn)
 
     database.create_path_table(conn)
@@ -124,15 +126,15 @@ def data_ready():
     data_to_pickle()
 
 
+# main function, where you can give an input image and get the plots of the most similar images.
 def main(input_image):
-
     dict = generator_vergleich(input_image)
 
     top_five = topfive(dict)
 
     image = mpimg.imread(input_image)
 
-    # Figur erstellen
+    # create figure
     fig2 = plt.figure()
 
     plt.imshow(image)
