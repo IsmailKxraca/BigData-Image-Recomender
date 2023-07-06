@@ -6,7 +6,6 @@ from colour import calculate_histogram
 from colour import bhattacharyya_distance
 import database
 import pandas as pd
-import csv
 import pickle
 import heapq
 import matplotlib.pyplot as plt
@@ -102,7 +101,8 @@ def hist_vergleich(input_img):
     return compare_dict
 
 
-
+# function for comparing the Input-Image with all of the scaled images saved in the pickle file.
+# Output = dictionary with all similarities
 def ssim_vergleich(input_img):
     new_img = cv2.imread(input_img)
 
