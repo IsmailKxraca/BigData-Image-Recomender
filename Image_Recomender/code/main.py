@@ -10,43 +10,11 @@ import pickle
 import heapq
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from embeddings import extract_mobilenet_features
+from embeddings import calculate_euclidean_distance
+from skimage import metrics
 
-# our path with the image data
-ordner_path = r"C:\Users\Ismai\OneDrive\Desktop\Big Data Dateien\train2017"
 conn = database.connect_test_database()
-
-# the list where we save the ID + Histograms temporarily
-hist_data = []
-ssim_data = []
-
-
-# function to fill path database and histogram with id into list hist_data
-def data(img_gen, id_gen):
-
-    cur_img = next(img_gen)
-    cur_transformed_img = cv2.imread(cur_img)
-
-    hist = calculate_histogram(cur_transformed_img)
-
-    resized_image = cv2.resize(image, (128, 128))
-    gray_image = cv2.cvtColor(resized_image, cv2.COLOR_BGR2GRAY)
-    ssim = np.reshape(gray_image, (128 * 128))
-
-    # print(hist)
-    cur_id = next(id_gen)
-    hist_data.append([cur_id, hist])
-    ssim_data.append([cur_id, ssim])
-    database.add_path(conn, cur_id, cur_img)
-
-
-# loads the hist_data list into a Dataframe and than turns it into a pickle file
-def data_to_pickle():
-    df = pd.DataFrame(hist_data, columns=['Id', 'Histogram'])
-    df.to_pickle("histograms.pkl")
-
-    df_ssim = pd.pd.DataFrame(hist_data, columns=['Id', 'Ssim'])
-    df_ssim.to_pickle("ssim.pkl")
-
 
 # load the histograms into a pickle file
 def read_pickle_hist():
@@ -60,22 +28,10 @@ def read_pickle_ssim():
     return df_restored
 
 
-# counter as generator for giving the IDs
-def id_generator():
-    current_id = 1
-    while True:
-        yield current_id
-        current_id += 1
-
-
-# generator giving out one picture-path per skip in the given Ordner
-def image_generator(path):
-    image_extensions = ['.jpg', '.jpeg', '.png', '.gif']
-
-    for filename in os.listdir(path):
-        file_extension = os.path.splitext(filename)[1].lower()
-        if file_extension in image_extensions:
-            yield os.path.join(path, filename)
+# load the feature vectors into a pickle file
+def read_pickle_embeddings():
+    df_restored = pd.read_pickle("embeddings.pkl")
+    return df_restored
 
 
 # input = dictionary with all similarities. Output = list with Ids of the top five highest values.
@@ -84,6 +40,11 @@ def topfive(dict):
 
     return largest_values
 
+
+def topfive_embeddings(dict):
+    smallest_values = heapq.nsmallest(5, dict, key=dict.get)
+
+    return smallest_values
 
 # generator for comparing the Input-Image with all of the histograms saved in the pickle file.
 # Output = dictionary with all similarities
@@ -120,6 +81,19 @@ def ssim_vergleich(input_img):
     return compare_dict
 
 
+def embeddings_vergleich(input_img):
+    new_features = extract_mobilenet_features(input_img)
+    print(new_features)
+    compare_dict = {}
+    df = read_pickle_embeddings()
+    for index, row in df.iterrows():
+        cur_id = row["Id"]
+        cur_features = row["Feature_vector"]
+        compare_dict[cur_id] = calculate_euclidean_distance(new_features, cur_features)
+
+    return compare_dict
+
+
 # plots the top five most similar images for histograms
 # conn = database, top_five_list = topfive function output, dict = compare dictionary
 def zeige_bilder_hist(conn, top_five_list, dict):
@@ -147,7 +121,7 @@ def zeige_bilder_hist(conn, top_five_list, dict):
     plt.show()
 
 
-# plots the top five most similar images for histograms
+# plots the top five most similar images for ssim
 # conn = database, top_five_list = topfive function output, dict = compare dictionary
 def zeige_bilder_ssim(conn, top_five_list, dict):
     # gets the full image paths of the top five IDs
@@ -173,19 +147,32 @@ def zeige_bilder_ssim(conn, top_five_list, dict):
     plt.tight_layout()
     plt.show()
 
-# makes database + histogram pickle file ready. with the 31000 images of the Ordner
-def data_ready():
-    database.reset_database(conn)
 
-    database.create_path_table(conn)
+# plots the top five most similar images for embedding
+# conn = database, top_five_list = topfive function output, dict = compare dictionary
+def zeige_bilder_embedding(conn, top_five_list, dict):
+    # gets the full image paths of the top five IDs
+    path_liste = []
+    for id in top_five_list:
+        path_liste.append(database.get_path_from_id(conn, id))
 
-    img_gen = image_generator(ordner_path)
-    id_gen = id_generator()
+    fig, axes = plt.subplots(nrows=1, ncols=5, figsize=(12, 4))
 
-    for i in range(31000):
-        data(img_gen, id_gen)
+    # plots all five images with the similarity as text next to each other.
+    for i in range(5):
+        image_path = path_liste[i]
+        image = mpimg.imread(image_path)
+        axes[i].imshow(image)
+        axes[i].axis('off')
 
-    data_to_pickle()
+        fig.text(0.5, 0.95, 'Embedding (MobileNet Features)', fontsize=12, color='white', backgroundcolor="black", weight="bold",
+                  ha='center', va='center')
+        text = f"{round(dict[top_five_list[i]],1)} Distanz"
+        axes[i].text(0, 0, text, color='white', backgroundcolor='black', fontsize=10, weight='bold')
+
+    # final plot
+    plt.tight_layout()
+    plt.show()
 
 
 # main function for color-scheme, where you can give an input image and get the plots of the most similar images.
@@ -228,8 +215,32 @@ def main_ssim(input_image):
     zeige_bilder_ssim(conn, top_five, dict)
 
 
-#data_to_pickle()
-main_hist(r"C:\Users\Ismai\Downloads\tempxwiesebluehengjpg100~_v-gseagaleriexl.jpg")
+# main function for embedding
+def main_embedding(input_image):
+    dict = embeddings_vergleich(input_image)
+
+    top_five = topfive_embeddings(dict)
+
+    image = mpimg.imread(input_image)
+
+    # create figure
+    fig2 = plt.figure()
+
+    plt.imshow(image)
+    fig2.text(0.5, 0.95, 'Input Image', fontsize=12, color='red', backgroundcolor="black",weight="bold", ha='center', va='center')
+    plt.axis('off')
+
+    plt.show(block=False)
+
+    zeige_bilder_embedding(conn, top_five, dict)
+
+
+#data_ready()
+
+#database.show_path(conn)
+#main_hist(r"D:\images\weather_image_recognition\rain\134.jpg")
+#main_embedding(r"D:\images\weather_image_recognition\rain\134.jpg")
+#main_ssim(r"D:\images\weather_image_recognition\rain\134.jpg")
 
 
 database.close_test_pictures_connection(conn)
