@@ -8,5 +8,5 @@ Description: An Algorithm that takes an Image as Input and gives you the 5 most 
 
 There are three Similarity Measure Options:
 1. Colour-Scheme: Bhattacharyya-Distance of Color-Histograms
-2. SSIM
+2. SSIM - Structural Similarity Index
 3. Embeddings: MobileNetV3_large, Cosinesimilarity of feature vectors
