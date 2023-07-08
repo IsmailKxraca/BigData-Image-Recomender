@@ -55,6 +55,7 @@ def data(img_gen, id_gen):
         img_features = extract_mobilenet_features(cur_img)
 
         cur_id = next(id_gen)
+
         hist_data.append([cur_id, hist])
         ssim_data.append([cur_id, ssim])
         embeddings_data.append([cur_id, img_features])
@@ -89,9 +90,9 @@ def pickle_update():
     df_restored_ssim = pd.read_pickle("ssim.pkl")
     df_restored_embedding = pd.read_pickle("embeddings.pkl")
 
-    df_new_hist = pd.DataFrame(hist_data)
-    df_new_ssim = pd.DataFrame(ssim_data)
-    df_new_embedding = pd.DataFrame(embeddings_data)
+    df_new_hist = pd.DataFrame(hist_data,columns=['Id', 'Histogram'])
+    df_new_ssim = pd.DataFrame(ssim_data,columns=['Id', 'Ssim'])
+    df_new_embedding = pd.DataFrame(embeddings_data,columns=['Id', 'Feature_vector'])
 
     df_hist = pd.concat([df_restored_hist, df_new_hist])
     df_ssim = pd.concat([df_restored_ssim, df_new_ssim])
@@ -99,7 +100,7 @@ def pickle_update():
 
     df_hist.to_pickle("histograms.pkl")
     df_ssim.to_pickle("ssim.pkl")
-    df_embeddings.to_pickle("embeddings.pkl")
+    df_embedding.to_pickle("embeddings.pkl")
 
 
 def data_ready():
@@ -113,17 +114,29 @@ def data_ready():
     data(img_gen, id_gen)
     first_data_to_pickle()
 
-
-    for i in range(140000):
+    for i in range(len(img_gen)):
         data(img_gen, id_gen)
 
+    pickle_update()
 
 def data_continue():
-    pass
+    img_gen = image_generator(ordner_path)
+    id_gen = id_generator()
 
+    for i in range(123000):
+        next(img_gen)
+        next(id_gen)
 
-data_ready()
-database.show_path(conn)
+    for i in range(5000):
+        data(img_gen, id_gen)
+
+    pickle_update()
+
+#data_continue()
+
+#database.show_path(conn)
 print(database.get_record_count(conn))
+
+
 
 database.close_test_pictures_connection(conn)

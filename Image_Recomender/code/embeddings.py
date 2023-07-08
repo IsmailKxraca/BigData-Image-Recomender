@@ -33,3 +33,11 @@ def calculate_euclidean_distance(vector1, vector2):
 
     return distance
 
+def cosine_similarity(vector1, vector2):
+    vector1 = np.squeeze(vector1)
+    vector2 = np.squeeze(vector2)
+    dot_product = np.dot(vector1, vector2)
+    norm1 = np.linalg.norm(vector1)
+    norm2 = np.linalg.norm(vector2)
+    similarity = dot_product / (norm1 * norm2)
+    return similarity

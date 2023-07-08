@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from embeddings import extract_mobilenet_features
 from embeddings import calculate_euclidean_distance
+from embeddings import cosine_similarity
 from skimage import metrics
 
 conn = database.connect_test_database()
@@ -19,6 +20,7 @@ conn = database.connect_test_database()
 # load the histograms into a pickle file
 def read_pickle_hist():
     df_restored = pd.read_pickle("histograms.pkl")
+    print(df_restored.info())
     return df_restored
 
 
@@ -89,7 +91,7 @@ def embeddings_vergleich(input_img):
     for index, row in df.iterrows():
         cur_id = row["Id"]
         cur_features = row["Feature_vector"]
-        compare_dict[cur_id] = calculate_euclidean_distance(new_features, cur_features)
+        compare_dict[cur_id] = cosine_similarity(new_features, cur_features)
 
     return compare_dict
 
@@ -113,7 +115,7 @@ def zeige_bilder_hist(conn, top_five_list, dict):
 
         fig.text(0.5, 0.95, 'Farbschema', fontsize=12, color='white', backgroundcolor="black", weight="bold",
                   ha='center', va='center')
-        text = f"{round(dict[top_five_list[i]],3)*100}% Ähnlichkeit"
+        text = f"{round(dict[top_five_list[i]]*100,3)}% Ähnlichkeit"
         axes[i].text(0, 0, text, color='white', backgroundcolor='black', fontsize=10, weight='bold')
 
     # final plot
@@ -140,7 +142,7 @@ def zeige_bilder_ssim(conn, top_five_list, dict):
 
         fig.text(0.5, 0.95, 'Structural similarity index', fontsize=12, color='white', backgroundcolor="black", weight="bold",
                   ha='center', va='center')
-        text = f"{round(dict[top_five_list[i]],3)*100}% Ähnlichkeit"
+        text = f"{round(dict[top_five_list[i]]*100,3)}% Ähnlichkeit"
         axes[i].text(0, 0, text, color='white', backgroundcolor='black', fontsize=10, weight='bold')
 
     # final plot
@@ -167,7 +169,7 @@ def zeige_bilder_embedding(conn, top_five_list, dict):
 
         fig.text(0.5, 0.95, 'Embedding (MobileNet Features)', fontsize=12, color='white', backgroundcolor="black", weight="bold",
                   ha='center', va='center')
-        text = f"{round(dict[top_five_list[i]],1)} Distanz"
+        text = f"{round(dict[top_five_list[i]]*100,3)}% Ähnlichkeit"
         axes[i].text(0, 0, text, color='white', backgroundcolor='black', fontsize=10, weight='bold')
 
     # final plot
@@ -180,7 +182,6 @@ def main_hist(input_image):
     dict = hist_vergleich(input_image)
 
     top_five = topfive(dict)
-
     image = mpimg.imread(input_image)
 
     # create figure
@@ -219,7 +220,7 @@ def main_ssim(input_image):
 def main_embedding(input_image):
     dict = embeddings_vergleich(input_image)
 
-    top_five = topfive_embeddings(dict)
+    top_five = topfive(dict)
 
     image = mpimg.imread(input_image)
 
@@ -235,12 +236,10 @@ def main_embedding(input_image):
     zeige_bilder_embedding(conn, top_five, dict)
 
 
-#data_ready()
-
 #database.show_path(conn)
-#main_hist(r"D:\images\weather_image_recognition\rain\134.jpg")
-#main_embedding(r"D:\images\weather_image_recognition\rain\134.jpg")
-#main_ssim(r"D:\images\weather_image_recognition\rain\134.jpg")
+#main_hist(r"D:\images\extra_collection\electronics\chris-ried-bN5XdU-bap4-unsplash.jpg")
+#main_embedding(r"D:\images\extra_collection\electronics\chris-ried-bN5XdU-bap4-unsplash.jpg")
+main_ssim(r"D:\images\extra_collection\electronics\chris-ried-bN5XdU-bap4-unsplash.jpg")
 
 
 database.close_test_pictures_connection(conn)

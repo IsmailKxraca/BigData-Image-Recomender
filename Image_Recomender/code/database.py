@@ -38,7 +38,6 @@ def get_record_count(conn):
     cursor = conn.cursor()
     cursor.execute(f"SELECT COUNT(*) FROM picture_paths")
     count = cursor.fetchone()[0]
-    conn.close()
     return count
 
 
@@ -54,6 +53,16 @@ def reset_database(conn):
     cursor.execute("DELETE FROM test_pictures")
     conn.commit()
     cursor.execute("DELETE FROM picture_paths")
+    conn.commit()
+
+
+def clean_none(conn):
+    cursor = conn.cursor()
+
+    # DELETE-Anweisung ausführen
+    cursor.execute("DELETE FROM picture_paths WHERE path IS NULL")
+
+    # Änderungen speichern
     conn.commit()
 
 # Methode zum Beenden der Datenbankverbindung
