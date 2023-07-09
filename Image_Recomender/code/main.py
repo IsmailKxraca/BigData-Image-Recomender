@@ -6,7 +6,6 @@ from Image_Recomender.code.colour import calculate_histogram
 from Image_Recomender.code.colour import bhattacharyya_distance
 import Image_Recomender.code.database as database
 import pandas as pd
-import pickle
 import heapq
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
@@ -17,20 +16,20 @@ from skimage import metrics
 conn = database.connect_test_database()
 
 
-# load the histograms into a pickle file
+# load the histograms.pkl as dataframe
 def read_pickle_hist():
     df_restored = pd.read_pickle("histograms.pkl")
     print(df_restored.info())
     return df_restored
 
 
-# load the resized and grayscaled images into a pickle file
+# load the ssim.pkl as Dataframe
 def read_pickle_ssim():
     df_restored = pd.read_pickle("ssim.pkl")
     return df_restored
 
 
-# load the feature vectors into a pickle file
+# load the embeddings.pkl as dataframe
 def read_pickle_embeddings():
     df_restored = pd.read_pickle("embeddings.pkl")
     return df_restored
@@ -41,12 +40,6 @@ def topfive(dict):
     largest_values = heapq.nlargest(5, dict, key=dict.get)
 
     return largest_values
-
-
-def topfive_embeddings(dict):
-    smallest_values = heapq.nsmallest(5, dict, key=dict.get)
-
-    return smallest_values
 
 
 # generator for comparing the Input-Image with all of the histograms saved in the pickle file.
@@ -84,6 +77,8 @@ def ssim_vergleich(input_img):
     return compare_dict
 
 
+# function for comparing the Input-Image with all of feature_vectors saved in the pickle file.
+# Output = dictionary with all similarities
 def embeddings_vergleich(input_img):
     new_features = extract_mobilenet_features(input_img)
     print(new_features)

@@ -5,29 +5,32 @@ from tensorflow.keras.applications.resnet50 import preprocess_input
 import numpy as np
 
 
-# MobileNetV3-Modell laden, typ Large ausgewählt
+# load MobileNetV3-Modell, type Large, without last output-Layer
 model = tf.keras.applications.MobileNetV3Large(weights='imagenet', include_top=False, pooling='avg')
 
 
-# Funktion zum Extrahieren des Feature-Vektors für ein Bild mit MobileNetV3
+# function for extracting the feature-vector of a image with MobileNetV3
 def extract_mobilenet_features(image_path):
-    # Bild einlesen und vorverarbeiten
+    # read image and process it so we can work with it
     img = image.load_img(image_path, target_size=(224, 224))
     img = image.img_to_array(img)
     img = np.expand_dims(img, axis=0)
     img = preprocess_input(img)
 
-    # Feature-Vektor extrahieren
+    # extract feature-vector
     features = model.predict(img)
 
     return features
 
 
+# calculate the cosine-similarity of two vectors
 def cosine_similarity(vector1, vector2):
+    # process vectors
     vector1 = np.squeeze(vector1)
     vector2 = np.squeeze(vector2)
     dot_product = np.dot(vector1, vector2)
     norm1 = np.linalg.norm(vector1)
     norm2 = np.linalg.norm(vector2)
     similarity = dot_product / (norm1 * norm2)
+
     return similarity
