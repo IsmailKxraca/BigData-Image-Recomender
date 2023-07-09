@@ -2,11 +2,10 @@ import cv2
 import numpy as np
 import os
 import sys
-from colour import calculate_histogram
-import database
+from Image_Recomender.code.colour import calculate_histogram
+import Image_Recomender.code.database as database
 import pandas as pd
-from embeddings import extract_mobilenet_features
-from embeddings import calculate_euclidean_distance
+from Image_Recomender.code.embeddings import extract_mobilenet_features
 
 
 # our path with the image data
@@ -127,7 +126,7 @@ def data_continue():
 #data_continue()
 
 #database.show_path(conn)
-print(database.get_record_count(conn))
+#print(database.get_record_count(conn))
 
 
 

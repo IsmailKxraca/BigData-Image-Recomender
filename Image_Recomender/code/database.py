@@ -68,5 +68,3 @@ def clean_none(conn):
 # Methode zum Beenden der Datenbankverbindung
 def close_test_pictures_connection(conn):
     conn.close()
-
-

@@ -2,20 +2,20 @@ import cv2
 import numpy as np
 import os
 import sys
-from colour import calculate_histogram
-from colour import bhattacharyya_distance
-import database
+from Image_Recomender.code.colour import calculate_histogram
+from Image_Recomender.code.colour import bhattacharyya_distance
+import Image_Recomender.code.database as database
 import pandas as pd
 import pickle
 import heapq
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
-from embeddings import extract_mobilenet_features
-from embeddings import calculate_euclidean_distance
-from embeddings import cosine_similarity
+from Image_Recomender.code.embeddings import extract_mobilenet_features
+from Image_Recomender.code.embeddings import cosine_similarity
 from skimage import metrics
 
 conn = database.connect_test_database()
+
 
 # load the histograms into a pickle file
 def read_pickle_hist():
@@ -47,6 +47,7 @@ def topfive_embeddings(dict):
     smallest_values = heapq.nsmallest(5, dict, key=dict.get)
 
     return smallest_values
+
 
 # generator for comparing the Input-Image with all of the histograms saved in the pickle file.
 # Output = dictionary with all similarities
@@ -235,11 +236,11 @@ def main_embedding(input_image):
 
     zeige_bilder_embedding(conn, top_five, dict)
 
-
-#database.show_path(conn)
-#main_hist(r"D:\images\extra_collection\electronics\chris-ried-bN5XdU-bap4-unsplash.jpg")
-#main_embedding(r"D:\images\extra_collection\electronics\chris-ried-bN5XdU-bap4-unsplash.jpg")
-main_ssim(r"D:\images\extra_collection\electronics\chris-ried-bN5XdU-bap4-unsplash.jpg")
+if __name__ == "__main__":
+    # database.show_path(conn)
+    # main_hist(r"D:\images\extra_collection\electronics\chris-ried-bN5XdU-bap4-unsplash.jpg")
+    # main_embedding(r"D:\images\extra_collection\electronics\chris-ried-bN5XdU-bap4-unsplash.jpg")
+    main_ssim(r"D:\images\extra_collection\electronics\chris-ried-bN5XdU-bap4-unsplash.jpg")
 
 
 database.close_test_pictures_connection(conn)
