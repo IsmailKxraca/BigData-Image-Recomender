@@ -5,7 +5,6 @@ import sys
 from colour import calculate_histogram
 import database
 import pandas as pd
-import pickle
 from embeddings import extract_mobilenet_features
 from embeddings import calculate_euclidean_distance
 
