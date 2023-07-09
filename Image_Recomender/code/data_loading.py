@@ -37,7 +37,8 @@ def image_generator(path):
                 yield image_path
 
 
-# function to fill path database and histogram with id into list hist_data
+# function to fill the current image measures + current ID into the related Similarity-Measure-List
+# adds the current image-path + ID into the database
 def data(img_gen, id_gen):
     try:
         cur_img = next(img_gen)
@@ -65,16 +66,9 @@ def data(img_gen, id_gen):
     except cv2.error as e:
         data(img_gen, id_gen)
 
-    if len(hist_data) >= 5000:
-        pickle_update()
-        hist_data.clear()
-        ssim_data.clear()
-        embeddings_data.clear()
-
-
 
 # loads the hist_data list into a Dataframe and than turns it into a pickle file
-def first_data_to_pickle():
+def data_to_pickle():
     df = pd.DataFrame(hist_data, columns=['Id', 'Histogram'])
     df.to_pickle("histograms.pkl")
 
@@ -85,6 +79,7 @@ def first_data_to_pickle():
     df_embeddings.to_pickle("embeddings.pkl")
 
 
+# updates the pickle files. Attaches the new Data to the existing Data.
 def pickle_update():
     df_restored_hist = pd.read_pickle("histograms.pkl")
     df_restored_ssim = pd.read_pickle("ssim.pkl")
@@ -103,6 +98,7 @@ def pickle_update():
     df_embedding.to_pickle("embeddings.pkl")
 
 
+# main-function. Connects everything and makes final result.
 def data_ready():
     database.reset_database(conn)
 
@@ -111,13 +107,10 @@ def data_ready():
     img_gen = image_generator(ordner_path)
     id_gen = id_generator()
 
-    data(img_gen, id_gen)
-    first_data_to_pickle()
-
     for i in range(len(img_gen)):
         data(img_gen, id_gen)
 
-    pickle_update()
+    data_to_pickle()
 
 def data_continue():
     img_gen = image_generator(ordner_path)

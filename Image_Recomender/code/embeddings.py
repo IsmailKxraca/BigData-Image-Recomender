@@ -23,16 +23,6 @@ def extract_mobilenet_features(image_path):
     return features
 
 
-def calculate_euclidean_distance(vector1, vector2):
-    # Umwandlung der Vektoren in Numpy-Arrays
-    vector1 = np.array(vector1)
-    vector2 = np.array(vector2)
-
-    # Berechnung des euklidischen Abstands
-    distance = np.linalg.norm(vector1 - vector2)
-
-    return distance
-
 def cosine_similarity(vector1, vector2):
     vector1 = np.squeeze(vector1)
     vector2 = np.squeeze(vector2)
