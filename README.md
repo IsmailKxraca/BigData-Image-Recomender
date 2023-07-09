@@ -12,7 +12,9 @@ There are three Similarity Measure Options:
 3. Embeddings: MobileNetV3_large, Cosinesimilarity of feature vectors
 
 You have to download the pickle-files linked here, from Google Drive. 
+
 pickle-Files: https://drive.google.com/file/d/141c4YL0f8gdtPl83miTrzZzAP7ZjOabI/view?usp=sharing
+
 The Link is also in the files in the code folder
 
 After downloading you have to paste the pickle-files into the code folder.
