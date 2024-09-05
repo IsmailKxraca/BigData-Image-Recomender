@@ -13,7 +13,7 @@ There are three Similarity Measure Options:
 
 You have to download the pickle-files linked here, from Google Drive. 
 
-pickle-Files: https://drive.google.com/file/d/141c4YL0f8gdtPl83miTrzZzAP7ZjOabI/view?usp=sharing
+pickle-Files: https://drive.google.com/drive/folders/14V5234IIfh1sRnh_Om0sLPt70LvffYh7?usp=drive_link
 
 The Link is also in the files in the code folder
 
